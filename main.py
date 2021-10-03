@@ -1,8 +1,15 @@
-# By @TokyoEdTech
-
 import turtle
 import time
 import random
+from configparser import ConfigParser
+
+#recives colors from config.ini converts them in int array
+def colorDecoder(color):
+    rgb=color.split(",")
+    rgb[0]=int(rgb[0])
+    rgb[1]=int(rgb[1])
+    rgb[2]=int(rgb[2])
+    return rgb
 
 delay = 0.1
 
@@ -10,18 +17,25 @@ delay = 0.1
 score = 0
 high_score = 0
 
+#importing config
+config = ConfigParser()
+config.read('config.ini')
+
 # Set up the screen
 wn = turtle.Screen()
-wn.title("Snake Game by @TokyoEdTech")
-wn.bgcolor("green")
+wn.title("Snake Game")
+wn.colormode(255)
+rgb=colorDecoder(config.get('Color','bg'))
+wn.bgcolor(rgb[0],rgb[1],rgb[2])
 wn.setup(width=600, height=600)
 wn.tracer(0) # Turns off the screen updates
 
 # Snake head
 head = turtle.Turtle()
 head.speed(0)
-head.shape("square")
-head.color("black")
+head.shape("circle")
+rgb=colorDecoder(config.get('Color','head'))
+head.color(rgb[0],rgb[1],rgb[2])
 head.penup()
 head.goto(0,0)
 head.direction = "stop"
@@ -30,7 +44,8 @@ head.direction = "stop"
 food = turtle.Turtle()
 food.speed(0)
 food.shape("circle")
-food.color("red")
+rgb=colorDecoder(config.get('Color','food'))
+food.color(rgb[0],rgb[1],rgb[2])
 food.penup()
 food.goto(0,100)
 
@@ -40,7 +55,8 @@ segments = []
 pen = turtle.Turtle()
 pen.speed(0)
 pen.shape("square")
-pen.color("white")
+rgb=colorDecoder(config.get('Color','score'))
+pen.color(rgb[0],rgb[1],rgb[2])
 pen.penup()
 pen.hideturtle()
 pen.goto(0, 260)
@@ -124,13 +140,14 @@ while True:
         # Add a segment
         new_segment = turtle.Turtle()
         new_segment.speed(0)
-        new_segment.shape("square")
-        new_segment.color("grey")
+        new_segment.shape("circle")
+        rgb=colorDecoder(config.get('Color','trail'))
+        new_segment.color(rgb[0],rgb[1],rgb[2])
         new_segment.penup()
         segments.append(new_segment)
 
         # Shorten the delay
-        delay -= 0.001
+        delay -= 0.0001
 
         # Increase the score
         score += 10
