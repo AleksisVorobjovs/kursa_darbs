@@ -1,3 +1,6 @@
+import logging
+import logging.config
+import yaml
 import turtle
 import time
 import random
@@ -11,21 +14,45 @@ def colorDecoder(color):
     rgb[2]=int(rgb[2])
     return rgb
 
+# Loading logging configuration
+with open('./log_c.yaml', 'r') as stream:
+    config = yaml.safe_load(stream)
+
+logging.config.dictConfig(config)
+
+# Creating logger
+logger = logging.getLogger('root')
+
+# Initiating and reading config values
+logger.info('Loading configuration from file')
+
+
+try:
+    #importing config
+    config = ConfigParser()
+    config.read('config.ini')
+
+    backgroundColor = config.get('Color','bg')
+    headColor = config.get('Color','head')
+    foodColor = config.get('Color','food')
+    scoreColor = config.get('Color','score')
+    trailColor =  config.get('Color','trail')
+except:
+	logger.exception("")
+logger.info('DONE')
+
 delay = 0.1
 
 # Score
 score = 0
 high_score = 0
 
-#importing config
-config = ConfigParser()
-config.read('config.ini')
-
 # Set up the screen
+logger.info('Stting up playing field')
 wn = turtle.Screen()
 wn.title("Snake Game")
 wn.colormode(255)
-rgb=colorDecoder(config.get('Color','bg'))
+rgb=colorDecoder(backgroundColor)
 wn.bgcolor(rgb[0],rgb[1],rgb[2])
 wn.setup(width=600, height=600)
 wn.tracer(0) # Turns off the screen updates
@@ -34,7 +61,7 @@ wn.tracer(0) # Turns off the screen updates
 head = turtle.Turtle()
 head.speed(0)
 head.shape("circle")
-rgb=colorDecoder(config.get('Color','head'))
+rgb=colorDecoder(headColor)
 head.color(rgb[0],rgb[1],rgb[2])
 head.penup()
 head.goto(0,0)
@@ -44,7 +71,7 @@ head.direction = "stop"
 food = turtle.Turtle()
 food.speed(0)
 food.shape("circle")
-rgb=colorDecoder(config.get('Color','food'))
+rgb=colorDecoder(foodColor)
 food.color(rgb[0],rgb[1],rgb[2])
 food.penup()
 food.goto(0,100)
@@ -55,7 +82,7 @@ segments = []
 pen = turtle.Turtle()
 pen.speed(0)
 pen.shape("square")
-rgb=colorDecoder(config.get('Color','score'))
+rgb=colorDecoder(scoreColor)
 pen.color(rgb[0],rgb[1],rgb[2])
 pen.penup()
 pen.hideturtle()
@@ -96,6 +123,8 @@ def move():
         x = head.xcor()
         head.setx(x + 20)
 
+logger.info('DONE')
+
 # Keyboard bindings
 wn.listen()
 wn.onkeypress(go_up, "w")
@@ -104,11 +133,13 @@ wn.onkeypress(go_left, "a")
 wn.onkeypress(go_right, "d")
 
 # Main game loop
+logger.info('Game has started')
 while True:
     wn.update()
 
     # Check for a collision with the border
     if head.xcor()>290 or head.xcor()<-290 or head.ycor()>290 or head.ycor()<-290:
+        logger.info('Game finished with score = '+str(score))
         time.sleep(1)
         head.goto(0,0)
         head.direction = "stop"
@@ -141,7 +172,7 @@ while True:
         new_segment = turtle.Turtle()
         new_segment.speed(0)
         new_segment.shape("circle")
-        rgb=colorDecoder(config.get('Color','trail'))
+        rgb=colorDecoder(trailColor)
         new_segment.color(rgb[0],rgb[1],rgb[2])
         new_segment.penup()
         segments.append(new_segment)
@@ -175,6 +206,7 @@ while True:
     # Check for head collision with the body segments
     for segment in segments:
         if segment.distance(head) < 20:
+            logger.info('Game finished with score = '+str(score))
             time.sleep(1)
             head.goto(0,0)
             head.direction = "stop"
