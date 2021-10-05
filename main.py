@@ -52,7 +52,7 @@ logger.info('DONE')
 
 connection = None
 connected = False
-
+#connecting to DB
 def init_db():
 	global connection
 	connection = mysql.connector.connect(host=sql_host, database=sql_db, user=sql_user, password=sql_password)
@@ -70,7 +70,7 @@ def get_cursor():
 		connection.commit()
 	return connection.cursor()
 
-# Asteroid value insert
+# Score value insert
 def mysql_insert_score_into_db(name, score):
 	cursor = get_cursor()
 	try:
@@ -79,7 +79,7 @@ def mysql_insert_score_into_db(name, score):
 		connection.commit()
 	except Error as e :
 		logger.error( "INSERT INTO `scores` (`name`, `score`) VALUES ('" + str(name) + "', '" + str(score) +"')")
-		logger.error('Problem inserting asteroid values into DB: ' + str(e))
+		logger.error('Problem inserting score values into DB: ' + str(e))
 
 delay = 0.1
 
