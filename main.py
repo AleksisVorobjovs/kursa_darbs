@@ -4,7 +4,11 @@ import yaml
 import turtle
 import time
 import random
+import mysql.connector
+import easygui
+
 from configparser import ConfigParser
+from mysql.connector import Error
 
 #recives colors from config.ini converts them in int array
 def colorDecoder(color):
@@ -37,15 +41,54 @@ try:
     foodColor = config.get('Color','food')
     scoreColor = config.get('Color','score')
     trailColor =  config.get('Color','trail')
+    sql_host = config.get('DB', 'host')
+    sql_db = config.get('DB', 'db')
+    sql_user = config.get('DB', 'user')
+    sql_password = config.get('DB', 'password')
 except:
 	logger.exception("")
 logger.info('DONE')
+
+
+connection = None
+connected = False
+
+def init_db():
+	global connection
+	connection = mysql.connector.connect(host=sql_host, database=sql_db, user=sql_user, password=sql_password)
+
+init_db()
+
+def get_cursor():
+	global connection
+	try:
+		connection.ping(reconnect=True, attempts=1, delay=0)
+		connection.commit()
+	except mysql.connector.Error as err:
+		logger.error("No connection to db " + str(err))
+		connection = init_db()
+		connection.commit()
+	return connection.cursor()
+
+# Asteroid value insert
+def mysql_insert_score_into_db(name, score):
+	cursor = get_cursor()
+	try:
+		cursor = connection.cursor()
+		result  = cursor.execute( "INSERT INTO `scores` (`name`, `score`) VALUES ('" + str(name) + "', '" + str(score) +"')")
+		connection.commit()
+	except Error as e :
+		logger.error( "INSERT INTO `scores` (`name`, `score`) VALUES ('" + str(name) + "', '" + str(score) +"')")
+		logger.error('Problem inserting asteroid values into DB: ' + str(e))
 
 delay = 0.1
 
 # Score
 score = 0
 high_score = 0
+
+#asking for name
+name = easygui.enterbox("Enter a username: ")
 
 # Set up the screen
 logger.info('Stting up playing field')
@@ -87,7 +130,7 @@ pen.color(rgb[0],rgb[1],rgb[2])
 pen.penup()
 pen.hideturtle()
 pen.goto(0, 260)
-pen.write("Score: 0  High Score: 0", align="center", font=("Courier", 24, "normal"))
+pen.write("Score: 0  Today's best: 0", align="center", font=("Courier", 24, "normal"))
 
 # Functions
 def go_up():
@@ -140,6 +183,7 @@ while True:
     # Check for a collision with the border
     if head.xcor()>290 or head.xcor()<-290 or head.ycor()>290 or head.ycor()<-290:
         logger.info('Game finished with score = '+str(score))
+        mysql_insert_score_into_db(name, score)
         time.sleep(1)
         head.goto(0,0)
         head.direction = "stop"
@@ -158,7 +202,7 @@ while True:
         delay = 0.1
 
         pen.clear()
-        pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) 
+        pen.write("Score: {}  Today's best: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) 
 
 
     # Check for a collision with the food
@@ -187,7 +231,7 @@ while True:
             high_score = score
         
         pen.clear()
-        pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) 
+        pen.write("Score: {}  Today's best: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) 
 
     # Move the end segments first in reverse order
     for index in range(len(segments)-1, 0, -1):
@@ -207,6 +251,7 @@ while True:
     for segment in segments:
         if segment.distance(head) < 20:
             logger.info('Game finished with score = '+str(score))
+            mysql_insert_score_into_db(name, score)
             time.sleep(1)
             head.goto(0,0)
             head.direction = "stop"
@@ -226,7 +271,7 @@ while True:
         
             # Update the score display
             pen.clear()
-            pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
+            pen.write("Score: {}  Today's best: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
 
     time.sleep(delay)
 
