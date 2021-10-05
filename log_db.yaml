@@ -8,9 +8,9 @@ formatters:
 handlers:
   file:
     class: logging.handlers.TimedRotatingFileHandler
-    level: DEBUG
+    level: INFO
     formatter: complex
-    filename: game.log
+    filename: migrate_db.log
     when: 'midnight'
     encoding: 'utf-8'
     delay: False
@@ -18,10 +18,10 @@ handlers:
     interval: 1
   screen:
     class: logging.StreamHandler
-    level: DEBUG
+    level: INFO
     formatter: simple
     stream: ext://sys.stdout
 
 root:
-  level: DEBUG
+  level: INFO
   handlers: [file, screen]
