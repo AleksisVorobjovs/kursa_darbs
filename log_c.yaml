@@ -10,7 +10,7 @@ handlers:
     class: logging.handlers.TimedRotatingFileHandler
     level: DEBUG
     formatter: complex
-    filename: game.log
+    filename: logs/game.log
     when: 'midnight'
     encoding: 'utf-8'
     delay: False
