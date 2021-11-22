@@ -10,7 +10,7 @@ handlers:
     class: logging.handlers.TimedRotatingFileHandler
     level: INFO
     formatter: complex
-    filename: migrate_db.log
+    filename: logs/migrate_db.log
     when: 'midnight'
     encoding: 'utf-8'
     delay: False
