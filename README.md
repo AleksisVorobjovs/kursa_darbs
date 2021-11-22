@@ -1,5 +1,6 @@
 This is a snake game made by @TokyoEdTech and new features added by me
 To use it you will need MySQL database, all the files in tis repository, python3, and make your own config.ini file
+To see if everything is set up correctly run config_test.py
 
 config.ini example
 [Color]
