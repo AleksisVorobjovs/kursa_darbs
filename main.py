@@ -53,7 +53,10 @@ logger.info('DONE')
 connection = None
 connected = False
 # connecting to database
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2.1.1
 #connecting to DB
 def init_db():
 	global connection
