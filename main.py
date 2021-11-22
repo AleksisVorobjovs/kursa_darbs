@@ -52,11 +52,8 @@ logger.info('DONE')
 
 connection = None
 connected = False
-<<<<<<< HEAD
 # connecting to database
-=======
 #connecting to DB
->>>>>>> release/2.1.0
 def init_db():
 	global connection
 	connection = mysql.connector.connect(host=sql_host, database=sql_db, user=sql_user, password=sql_password)
