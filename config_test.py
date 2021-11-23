@@ -49,11 +49,12 @@ for i in colors:
     rgb=i.split(",")
     for j in rgb:
         if(int(j)>=0 and int(j)<=255):
-            print("OK")
-            print("----------")
+            print()
         else:
             print("Color doesn't exist make sure rgb value is >=0 and <=255")
             sys.exit()
+print("OK")
+print("----------")
 # Checking if possible to connect to MySQL with the existing config options
 print("Checking if it is possible to connect to MYSQL with the given config options -->")
 mysql_config_mysql_host = config.get('DB', 'host')
