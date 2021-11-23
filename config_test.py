@@ -49,7 +49,7 @@ for i in colors:
     rgb=i.split(",")
     for j in rgb:
         if(int(j)>=0 and int(j)<=255):
-            print()
+            continue
         else:
             print("Color doesn't exist make sure rgb value is >=0 and <=255")
             sys.exit()
